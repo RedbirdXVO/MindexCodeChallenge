@@ -10,6 +10,9 @@ namespace CodeChallenge.Services
     {
         Employee GetById(String id);
         Employee Create(Employee employee);
+        Compensation CreateCompensation(Compensation employee);
         Employee Replace(Employee originalEmployee, Employee newEmployee);
+        ReportingStructure GetReportingStructureById(String id);
+        Compensation GetCompensationById(string id);
     }
 }
