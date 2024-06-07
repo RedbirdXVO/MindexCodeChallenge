@@ -30,11 +30,32 @@ namespace CodeChallenge.Services
             return employee;
         }
 
+        public Compensation CreateCompensation(Compensation compensation)
+        {
+            if(compensation != null)
+            {
+                _employeeRepository.AddCompensation(compensation);
+                _employeeRepository.SaveAsync().Wait();
+            }
+
+            return compensation;
+        }
+
         public Employee GetById(string id)
         {
             if(!String.IsNullOrEmpty(id))
             {
                 return _employeeRepository.GetById(id);
+            }
+
+            return null;
+        }
+
+        public Compensation GetCompensationById(string id)
+        {
+            if(!String.IsNullOrEmpty(id))
+            {
+                return _employeeRepository.GetCompensationById(id);
             }
 
             return null;
@@ -58,6 +79,36 @@ namespace CodeChallenge.Services
             }
 
             return newEmployee;
+        }
+
+        public ReportingStructure GetReportingStructureById(string id)
+        {
+            if (!String.IsNullOrEmpty(id))
+            {
+                var employee = _employeeRepository.GetEmployeeWithDirectReportsById(id);
+                if (employee != null)
+                {
+                    return new ReportingStructure(id, GetNumberOfReports(employee));
+                }
+            }
+
+            return null;
+        }
+
+        private int GetNumberOfReports(Employee employee) 
+        { 
+            if(employee.DirectReports == null)
+            {
+                return 0;
+            }
+
+            int directReportsCount = employee.DirectReports.Count();
+            foreach (Employee directReport in employee.DirectReports)
+            {
+                directReportsCount += GetNumberOfReports(_employeeRepository.GetEmployeeWithDirectReportsById(directReport.EmployeeId));
+            }
+
+            return directReportsCount;
         }
     }
 }
